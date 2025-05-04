@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Questions</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: white;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+        }
+        .role-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .role-info p {
+            margin: 5px 0;
+            color: #333;
+        }
+        .questions-container {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .question-group {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .question-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .question-group p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #5a6fd1;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Role-Specific Questions</h1>
+            <p>Review and customize the questions for your assessment</p>
+        </div>
+
+        <div class="role-info">
+            <p><strong>Company:</strong> <span id="companyName"></span></p>
+            <p><strong>Position:</strong> <span id="position"></span></p>
+            <p><strong>Role Type:</strong> <span id="roleType"></span></p>
+            <p><strong>Experience Level:</strong> <span id="experienceLevel"></span></p>
+            <p><strong>Required Skills:</strong> <span id="skills"></span></p>
+        </div>
+        
+        <div class="questions-container">
+            <div id="questionsList">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+            
+            <div class="btn-container">
+                <a href="/employer-form.html" class="btn btn-secondary">Back</a>
+                <button id="saveQuestions" class="btn">Save Questions</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Role-specific questions
+        const questionsByRole = {
+            software: [
+                {
+                    title: "Technical Problem Solving",
+                    question: "Describe a complex technical problem you solved and the approach you took."
+                },
+                {
+                    title: "Code Review",
+                    question: "How do you approach code reviews? What aspects do you focus on?"
+                },
+                {
+                    title: "System Design",
+                    question: "How would you design a scalable web application? Consider both frontend and backend aspects."
+                }
+            ],
+            data: [
+                {
+                    title: "Data Analysis",
+                    question: "Describe your process for analyzing a new dataset. What steps do you take?"
+                },
+                {
+                    title: "Machine Learning",
+                    question: "Explain a machine learning project you worked on and the challenges you faced."
+                },
+                {
+                    title: "Data Visualization",
+                    question: "How do you determine the best way to visualize data for different audiences?"
+                }
+            ],
+            product: [
+                {
+                    title: "Product Strategy",
+                    question: "How do you prioritize features in a product roadmap?"
+                },
+                {
+                    title: "User Research",
+                    question: "Describe your approach to gathering and analyzing user feedback."
+                },
+                {
+                    title: "Cross-functional Leadership",
+                    question: "How do you work with engineering and design teams to deliver products?"
+                }
+            ],
+            design: [
+                {
+                    title: "Design Process",
+                    question: "Walk us through your design process from research to final implementation."
+                },
+                {
+                    title: "User Experience",
+                    question: "How do you balance user needs with business requirements?"
+                },
+                {
+                    title: "Design Systems",
+                    question: "What's your approach to creating and maintaining a design system?"
+                }
+            ],
+            marketing: [
+                {
+                    title: "Campaign Strategy",
+                    question: "How do you develop and measure the success of marketing campaigns?"
+                },
+                {
+                    title: "Content Strategy",
+                    question: "Describe your approach to creating engaging content for different platforms."
+                },
+                {
+                    title: "Analytics",
+                    question: "How do you use data to inform your marketing decisions?"
+                }
+            ]
+        };
+
+        // Load form data and display questions
+        document.addEventListener('DOMContentLoaded', function() {
+            const formData = JSON.parse(localStorage.getItem('employerFormData'));
+            
+            if (!formData) {
+                window.location.href = '/employer-form.html';
+                return;
+            }
+
+            // Display role information
+            document.getElementById('companyName').textContent = formData.companyName;
+            document.getElementById('position').textContent = formData.position;
+            document.getElementById('roleType').textContent = formData.roleType;
+            document.getElementById('experienceLevel').textContent = formData.experienceLevel;
+            document.getElementById('skills').textContent = formData.skills.join(', ');
+
+            // Display role-specific questions
+            const questionsList = document.getElementById('questionsList');
+            const questions = questionsByRole[formData.roleType] || [];
+
+            questions.forEach((q, index) => {
+                const questionGroup = document.createElement('div');
+                questionGroup.className = 'question-group';
+                questionGroup.innerHTML = `
+                    <h3>${q.title}</h3>
+                    <p>${q.question}</p>
+                    <textarea 
+                        class="answer-input" 
+                        placeholder="Enter your customized version of this question (optional)"
+                        rows="3"
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+                    ></textarea>
+                `;
+                questionsList.appendChild(questionGroup);
+            });
+        });
+
+        // Save questions
+        document.getElementById('saveQuestions').addEventListener('click', function() {
+            const formData = JSON.parse(localStorage.getItem('employerFormData'));
+            const questions = Array.from(document.querySelectorAll('.question-group')).map(group => ({
+                title: group.querySelector('h3').textContent,
+                originalQuestion: group.querySelector('p').textContent,
+                customizedQuestion: group.querySelector('textarea').value.trim() || group.querySelector('p').textContent
+            }));
+
+            // Store questions in localStorage
+            localStorage.setItem('assessmentQuestions', JSON.stringify({
+                ...formData,
+                questions
+            }));
+
+            // Redirect to dashboard
+            window.location.href = '/employer-dashboard.html';
+        });
+    </script>
+</body>
+</html> 

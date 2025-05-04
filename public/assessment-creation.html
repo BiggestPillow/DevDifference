@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Creation</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 180px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+        }
+        .topics-container {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .topics-list {
+            list-style: none;
+            padding: 0;
+        }
+        .topic-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        .topic-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+        }
+        .topic-item label {
+            font-size: 1.1em;
+            color: #333;
+            cursor: pointer;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: #f0f0f0;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">    
+            <h1>Assessment Creation</h1>
+            <p>Select the topics you want to include in your assessment</p>
+        </div>
+        
+        <div class="topics-container">
+            <ul class="topics-list">
+                <li class="topic-item">
+                    <input type="checkbox" id="topic1">
+                    <label for="topic1">Reliability</label>
+                </li>
+                <li class="topic-item">
+                    <input type="checkbox" id="topic2">
+                    <label for="topic2">Accountability</label>
+                </li>
+                <li class="topic-item">
+                    <input type="checkbox" id="topic3">
+                    <label for="topic3">Honesty</label>
+                </li>
+                <li class="topic-item">
+                    <input type="checkbox" id="topic4">
+                    <label for="topic4">Diligence</label>
+                </li>
+                <li class="topic-item">
+                    <input type="checkbox" id="topic5">
+                    <label for="topic5">Collaboration</label>
+                </li>
+                <li class="topic-item">
+                    <input type="checkbox" id="topic6">
+                    <label for="topic6">Communication</label>
+                </li>
+                <li class="topic-item">
+                    <input type="checkbox" id="topic7">
+                    <label for="topic7">Initiative</label>
+                </li>
+                <li class="topic-item">
+                    <input type="checkbox" id="topic8">
+                    <label for="topic8">Adaptability</label>
+                </li>
+            </ul>
+        </div>
+        
+        <a href="/landing.html" class="back-btn">Back to Dashboard</a>
+    </div>
+</body>
+</html> 

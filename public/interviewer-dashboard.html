@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interviewer Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: white;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+        }
+        .interviews-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .interviews-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            color: #333;
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .interviews-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            color: #333;
+        }
+        .interviews-table tr:last-child td {
+            border-bottom: none;
+        }
+        .interviews-table tr:hover {
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: #f0f0f0;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Interviews</h1>
+            <p>Select an interview to begin or continue</p>
+        </div>
+        
+        <table class="interviews-table">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Position</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr onclick="window.location.href='/interview.html?firm=techcorp'">
+                    <td>GNS Holdings</td>
+                    <td>Software Engineering Intern</td>
+                    <td><span class="status-badge status-pending">Pending</span></td>
+                </tr>
+                <tr onclick="window.location.href='/interview.html?firm=innovate'">
+                    <td>Ping Associates</td>
+                    <td>Software Engineering Intern</td>
+                    <td><span class="status-badge status-completed">Completed</span></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <a href="/" class="back-btn">Back to Role Selection</a>
+    </div>
+</body>
+</html> 

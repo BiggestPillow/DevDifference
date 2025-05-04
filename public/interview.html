@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Session</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: white;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+        }
+        .interview-container {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .camera-section {
+            flex: 1;
+        }
+        .question-section {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        #videoElement {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a6fd1;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        .question-content {
+            margin-top: 20px;
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #333;
+        }
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: #f0f0f0;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        .recording-status {
+            margin-top: 10px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Interview Session</h1>
+            <p>Please answer the following question</p>
+        </div>
+
+        <div class="interview-container">
+            <div class="camera-section">
+                <div class="video-container">
+                    <video id="videoElement" autoplay></video>
+                </div>
+                <div class="controls">
+                    <button id="startRecord" class="btn btn-primary">Start Recording</button>
+                    <button id="stopRecord" class="btn btn-danger" disabled>Stop Recording</button>
+                </div>
+                <div class="recording-status" id="recordingStatus"></div>
+            </div>
+            
+            <div class="question-section">
+                <div class="timer">Time Remaining: <span id="timer">02:00</span></div>
+                <div class="question-content">
+                    <h3>Question:</h3>
+                    <p>What is one time you have done something good for a community?</p>
+                </div>
+            </div>
+        </div>
+
+        <a href="/interviewer-dashboard" class="back-btn">Back to Interviews</a>
+    </div>
+
+    <script>
+        // Get video element and buttons
+        const videoElement = document.getElementById('videoElement');
+        const startButton = document.getElementById('startRecord');
+        const stopButton = document.getElementById('stopRecord');
+        const recordingStatus = document.getElementById('recordingStatus');
+        let mediaRecorder;
+        let recordedChunks = [];
+        let recognition;
+        let isRecording = false;
+        let transcript = '';
+
+        // Initialize speech recognition
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (event) => {
+                transcript = Array.from(event.results)
+                    .map(result => result[0].transcript)
+                    .join('');
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                recordingStatus.textContent = `Error: ${event.error}`;
+            };
+
+            recognition.onend = () => {
+                if (isRecording) {
+                    recognition.start();
+                }
+            };
+        }
+
+        // Function to send data to server
+        async function sendToServer(videoBlob, transcript) {
+            const formData = new FormData();
+            formData.append('video', videoBlob, 'interview.webm');
+            formData.append('transcript', transcript);
+            formData.append('question', document.querySelector('.question-content p').textContent);
+            formData.append('firm', new URLSearchParams(window.location.search).get('firm'));
+
+            try {
+                const response = await fetch('/api/interview/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to submit interview');
+                }
+                
+                const result = await response.json();
+                console.log('Interview submitted successfully:', result);
+                recordingStatus.textContent = 'Interview submitted successfully!';
+            } catch (error) {
+                console.error('Error submitting interview:', error);
+                recordingStatus.textContent = 'Error submitting interview. Please try again.';
+            }
+        }
+
+        // Request camera access
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                videoElement.srcObject = stream;
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    sendToServer(blob, transcript);
+                };
+            })
+            .catch(err => {
+                console.error('Error accessing media devices:', err);
+            });
+
+        // Start recording
+        startButton.addEventListener('click', () => {
+            recordedChunks = [];
+            transcript = '';
+            mediaRecorder.start();
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            startTimer();
+            isRecording = true;
+            if (recognition) {
+                recognition.start();
+            }
+            recordingStatus.textContent = 'Recording in progress...';
+        });
+
+        // Stop recording
+        stopButton.addEventListener('click', () => {
+            mediaRecorder.stop();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            stopTimer();
+            isRecording = false;
+            if (recognition) {
+                recognition.stop();
+            }
+            recordingStatus.textContent = 'Processing your interview...';
+        });
+
+        // Timer functionality
+        let timeLeft = 120; // 2 minutes in seconds
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    stopTimer();
+                    mediaRecorder.stop();
+                    startButton.disabled = false;
+                    stopButton.disabled = true;
+                    isRecording = false;
+                    if (recognition) {
+                        recognition.stop();
+                    }
+                    recordingStatus.textContent = 'Time\'s up! Processing your interview...';
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+    </script>
+</body>
+</html> 
