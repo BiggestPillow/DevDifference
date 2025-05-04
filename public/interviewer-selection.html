@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Interviewers</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: white;
+            margin-top: 100px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+        }
+        .assessment-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .assessment-info p {
+            margin: 5px 0;
+            color: #333;
+        }
+        .interviewers-container {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #5a6fd1;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+        .interviewer-list {
+            margin-top: 20px;
+        }
+        .interviewer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .interviewer-item button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .interviewer-item button:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Select Interviewers</h1>
+            <p>Add interviewers who will conduct the assessment</p>
+        </div>
+
+        <div class="assessment-info">
+            <p><strong>Company:</strong> <span id="companyName"></span></p>
+            <p><strong>Position:</strong> <span id="position"></span></p>
+            <p><strong>Role Type:</strong> <span id="roleType"></span></p>
+        </div>
+        
+        <div class="interviewers-container">
+            <form id="interviewerForm">
+                <div class="form-group">
+                    <label for="interviewerEmail">Interviewer Email</label>
+                    <input type="email" id="interviewerEmail" name="interviewerEmail" placeholder="Enter interviewer's email address" required>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+                
+                <button type="submit" class="btn">Add Interviewer</button>
+            </form>
+
+            <div class="interviewer-list" id="interviewerList">
+                <!-- Interviewers will be added here -->
+            </div>
+            
+            <div class="btn-container">
+                <a href="/role-questions.html" class="btn btn-secondary">Back</a>
+                <button id="sendAssessment" class="btn">Send Assessment</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load assessment data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get data from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const assessmentData = JSON.parse(urlParams.get('data'));
+            
+            if (!assessmentData) {
+                window.location.href = '/role-questions.html';
+                return;
+            }
+
+            // Display assessment information
+            document.getElementById('companyName').textContent = assessmentData.companyName;
+            document.getElementById('position').textContent = assessmentData.position;
+            document.getElementById('roleType').textContent = assessmentData.roleType;
+
+            // Initialize empty interviewers array
+            const interviewers = [];
+            updateInterviewerList(interviewers);
+        });
+
+        // Handle adding new interviewer
+        document.getElementById('interviewerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('interviewerEmail').value.trim();
+            const emailError = document.getElementById('emailError');
+            
+            // Validate email
+            if (!isValidEmail(email)) {
+                emailError.style.display = 'block';
+                return;
+            }
+            
+            emailError.style.display = 'none';
+            
+            // Get existing interviewers
+            const interviewers = JSON.parse(localStorage.getItem('interviewers') || '[]');
+            
+            // Add new interviewer
+            interviewers.push(email);
+            
+            // Save to localStorage
+            localStorage.setItem('interviewers', JSON.stringify(interviewers));
+            
+            // Update the list
+            updateInterviewerList(interviewers);
+            
+            // Clear the input
+            document.getElementById('interviewerEmail').value = '';
+        });
+
+        // Handle sending assessment
+        document.getElementById('sendAssessment').addEventListener('click', function() {
+            const interviewers = JSON.parse(localStorage.getItem('interviewers') || '[]');
+            
+            if (interviewers.length === 0) {
+                alert('Please add at least one interviewer');
+                return;
+            }
+            
+            // Get assessment data from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const assessmentData = JSON.parse(urlParams.get('data'));
+            
+            // Here you would typically send the assessment to the interviewers
+            // For now, we'll just show a success message and redirect
+            alert('Assessment sent successfully to ' + interviewers.length + ' interviewer(s)');
+            window.location.href = '/employer-dashboard.html';
+        });
+
+        // Helper function to validate email
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Helper function to update the interviewer list
+        function updateInterviewerList(interviewers) {
+            const list = document.getElementById('interviewerList');
+            list.innerHTML = '';
+            
+            interviewers.forEach((email, index) => {
+                const item = document.createElement('div');
+                item.className = 'interviewer-item';
+                item.innerHTML = `
+                    <span>${email}</span>
+                    <button type="button" onclick="removeInterviewer(${index})">Remove</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // Function to remove an interviewer
+        window.removeInterviewer = function(index) {
+            const interviewers = JSON.parse(localStorage.getItem('interviewers') || '[]');
+            interviewers.splice(index, 1);
+            localStorage.setItem('interviewers', JSON.stringify(interviewers));
+            updateInterviewerList(interviewers);
+        };
+    </script>
+</body>
+</html> 

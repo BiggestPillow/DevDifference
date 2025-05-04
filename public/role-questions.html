@@ -8,6 +8,7 @@
     <style>
         body {
             background: white;
+            margin-top: 200px;
         }
         .container {
             max-width: 1000px;
@@ -48,14 +49,23 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
         .question-group h3 {
             color: #333;
             margin-bottom: 15px;
+            padding-right: 30px;
         }
         .question-group p {
             color: #666;
             margin-bottom: 15px;
+        }
+        .question-checkbox {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
         }
         .btn {
             display: inline-block;
@@ -85,115 +95,140 @@
             justify-content: space-between;
             margin-top: 30px;
         }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>Role-Specific Questions</h1>
-            <p>Review and customize the questions for your assessment</p>
+            <p>Select and customize the questions for your assessment</p>
         </div>
 
         <div class="role-info">
             <p><strong>Company:</strong> <span id="companyName"></span></p>
             <p><strong>Position:</strong> <span id="position"></span></p>
             <p><strong>Role Type:</strong> <span id="roleType"></span></p>
-            <p><strong>Experience Level:</strong> <span id="experienceLevel"></span></p>
-            <p><strong>Required Skills:</strong> <span id="skills"></span></p>
         </div>
         
         <div class="questions-container">
-            <div id="questionsList">
-                <!-- Questions will be dynamically inserted here -->
-            </div>
-            
-            <div class="btn-container">
-                <a href="/employer-form.html" class="btn btn-secondary">Back</a>
-                <button id="saveQuestions" class="btn">Save Questions</button>
-            </div>
+            <form id="questionsForm">
+                <div id="questionsList">
+                    <!-- Questions will be dynamically inserted here -->
+                </div>
+                <div class="error-message" id="questionsError">Please select at least one question</div>
+                
+                <div class="btn-container">
+                    <a href="/assessment-creation.html" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn">Send to Interviewers</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        // Role-specific questions
-        const questionsByRole = {
-            software: [
+        // Behavioral questions based on selected values
+        const behavioralQuestions = {
+            reliability: [
                 {
-                    title: "Technical Problem Solving",
-                    question: "Describe a complex technical problem you solved and the approach you took."
+                    title: "Reliability in Work",
+                    question: "Describe a situation where you had to meet a tight deadline. How did you ensure you delivered on time?"
                 },
                 {
-                    title: "Code Review",
-                    question: "How do you approach code reviews? What aspects do you focus on?"
-                },
-                {
-                    title: "System Design",
-                    question: "How would you design a scalable web application? Consider both frontend and backend aspects."
+                    title: "Consistency",
+                    question: "How do you maintain consistent quality in your work, especially under pressure?"
                 }
             ],
-            data: [
+            accountability: [
                 {
-                    title: "Data Analysis",
-                    question: "Describe your process for analyzing a new dataset. What steps do you take?"
+                    title: "Taking Responsibility",
+                    question: "Share an example of when you made a mistake at work. How did you handle it?"
                 },
                 {
-                    title: "Machine Learning",
-                    question: "Explain a machine learning project you worked on and the challenges you faced."
-                },
-                {
-                    title: "Data Visualization",
-                    question: "How do you determine the best way to visualize data for different audiences?"
+                    title: "Ownership",
+                    question: "Describe a time when you took ownership of a project or task that wasn't originally assigned to you."
                 }
             ],
-            product: [
+            honesty: [
                 {
-                    title: "Product Strategy",
-                    question: "How do you prioritize features in a product roadmap?"
+                    title: "Ethical Decision Making",
+                    question: "Describe a situation where you had to make a difficult ethical decision at work."
                 },
                 {
-                    title: "User Research",
-                    question: "Describe your approach to gathering and analyzing user feedback."
-                },
-                {
-                    title: "Cross-functional Leadership",
-                    question: "How do you work with engineering and design teams to deliver products?"
+                    title: "Transparency",
+                    question: "How do you handle situations where you need to deliver difficult news or feedback?"
                 }
             ],
-            design: [
+            diligence: [
                 {
-                    title: "Design Process",
-                    question: "Walk us through your design process from research to final implementation."
+                    title: "Attention to Detail",
+                    question: "How do you ensure accuracy and thoroughness in your work?"
                 },
                 {
-                    title: "User Experience",
-                    question: "How do you balance user needs with business requirements?"
-                },
-                {
-                    title: "Design Systems",
-                    question: "What's your approach to creating and maintaining a design system?"
+                    title: "Work Ethic",
+                    question: "Describe a time when you went above and beyond to complete a task or project."
                 }
             ],
-            marketing: [
+            collaboration: [
                 {
-                    title: "Campaign Strategy",
-                    question: "How do you develop and measure the success of marketing campaigns?"
+                    title: "Teamwork",
+                    question: "Describe a successful team project you were part of. What was your role?"
                 },
                 {
-                    title: "Content Strategy",
-                    question: "Describe your approach to creating engaging content for different platforms."
+                    title: "Conflict Resolution",
+                    question: "How do you handle disagreements or conflicts within a team?"
+                }
+            ],
+            communication: [
+                {
+                    title: "Clear Communication",
+                    question: "Describe a time when you had to explain a complex idea to someone with less technical knowledge."
                 },
                 {
-                    title: "Analytics",
-                    question: "How do you use data to inform your marketing decisions?"
+                    title: "Active Listening",
+                    question: "How do you ensure you understand others' perspectives in a discussion?"
+                }
+            ],
+            initiative: [
+                {
+                    title: "Proactive Problem Solving",
+                    question: "Describe a time when you identified a problem before others noticed it and took action."
+                },
+                {
+                    title: "Self-Motivation",
+                    question: "How do you stay motivated when working on long-term projects?"
+                }
+            ],
+            adaptability: [
+                {
+                    title: "Handling Change",
+                    question: "Describe a time when you had to quickly adapt to a significant change at work."
+                },
+                {
+                    title: "Learning Agility",
+                    question: "How do you approach learning new skills or technologies?"
                 }
             ]
         };
 
         // Load form data and display questions
         document.addEventListener('DOMContentLoaded', function() {
-            const formData = JSON.parse(localStorage.getItem('employerFormData'));
+            // Get data from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const formData = {
+                companyName: urlParams.get('companyName'),
+                position: urlParams.get('position'),
+                roleType: urlParams.get('roleType'),
+                experienceLevel: urlParams.get('experienceLevel'),
+                skills: JSON.parse(urlParams.get('skills') || '[]')
+            };
             
-            if (!formData) {
+            if (!formData.companyName || !formData.position || !formData.roleType) {
                 window.location.href = '/employer-form.html';
                 return;
             }
@@ -202,17 +237,25 @@
             document.getElementById('companyName').textContent = formData.companyName;
             document.getElementById('position').textContent = formData.position;
             document.getElementById('roleType').textContent = formData.roleType;
-            document.getElementById('experienceLevel').textContent = formData.experienceLevel;
-            document.getElementById('skills').textContent = formData.skills.join(', ');
 
-            // Display role-specific questions
+            // Display behavioral questions based on role type and experience level
             const questionsList = document.getElementById('questionsList');
-            const questions = questionsByRole[formData.roleType] || [];
+            let allQuestions = [];
 
-            questions.forEach((q, index) => {
+            // Get questions based on role type and experience level
+            const topics = getTopicsForRole(formData.roleType, formData.experienceLevel);
+            topics.forEach(topic => {
+                if (behavioralQuestions[topic]) {
+                    allQuestions = allQuestions.concat(behavioralQuestions[topic]);
+                }
+            });
+
+            // Display questions
+            allQuestions.forEach((q, index) => {
                 const questionGroup = document.createElement('div');
                 questionGroup.className = 'question-group';
                 questionGroup.innerHTML = `
+                    <input type="checkbox" class="question-checkbox" id="question${index}" name="selectedQuestions" value="${index}" checked>
                     <h3>${q.title}</h3>
                     <p>${q.question}</p>
                     <textarea 
@@ -226,23 +269,74 @@
             });
         });
 
-        // Save questions
-        document.getElementById('saveQuestions').addEventListener('click', function() {
-            const formData = JSON.parse(localStorage.getItem('employerFormData'));
-            const questions = Array.from(document.querySelectorAll('.question-group')).map(group => ({
-                title: group.querySelector('h3').textContent,
-                originalQuestion: group.querySelector('p').textContent,
-                customizedQuestion: group.querySelector('textarea').value.trim() || group.querySelector('p').textContent
-            }));
+        // Helper function to get relevant topics based on role type and experience level
+        function getTopicsForRole(roleType, experienceLevel) {
+            const baseTopics = ['reliability', 'accountability', 'honesty'];
+            
+            switch(roleType) {
+                case 'Software Engineer':
+                case 'Data Scientist':
+                case 'DevOps Engineer':
+                    baseTopics.push('diligence', 'collaboration');
+                    break;
+                case 'Product Manager':
+                    baseTopics.push('communication', 'initiative');
+                    break;
+                case 'UX Designer':
+                    baseTopics.push('communication', 'adaptability');
+                    break;
+            }
+            
+            if (experienceLevel === 'Senior Level') {
+                baseTopics.push('initiative', 'adaptability');
+            }
+            
+            return baseTopics;
+        }
 
-            // Store questions in localStorage
-            localStorage.setItem('assessmentQuestions', JSON.stringify({
+        // Save questions
+        document.getElementById('questionsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset error message
+            document.getElementById('questionsError').style.display = 'none';
+            
+            // Get selected questions
+            const selectedCheckboxes = document.querySelectorAll('input[name="selectedQuestions"]:checked');
+            if (selectedCheckboxes.length === 0) {
+                document.getElementById('questionsError').style.display = 'block';
+                return;
+            }
+
+            // Get form data from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const formData = {
+                companyName: urlParams.get('companyName'),
+                position: urlParams.get('position'),
+                roleType: urlParams.get('roleType'),
+                experienceLevel: urlParams.get('experienceLevel'),
+                skills: JSON.parse(urlParams.get('skills') || '[]')
+            };
+
+            const questions = Array.from(selectedCheckboxes).map(checkbox => {
+                const questionGroup = checkbox.closest('.question-group');
+                return {
+                    title: questionGroup.querySelector('h3').textContent,
+                    originalQuestion: questionGroup.querySelector('p').textContent,
+                    customizedQuestion: questionGroup.querySelector('textarea').value.trim() || questionGroup.querySelector('p').textContent
+                };
+            });
+
+            // Create URL with all data
+            const assessmentData = {
                 ...formData,
                 questions
-            }));
-
-            // Redirect to dashboard
-            window.location.href = '/employer-dashboard.html';
+            };
+            
+            // Redirect to interviewer selection page with data
+            const params = new URLSearchParams();
+            params.append('data', JSON.stringify(assessmentData));
+            window.location.href = `/interviewer-selection.html?${params.toString()}`;
         });
     </script>
 </body>

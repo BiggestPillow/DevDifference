@@ -56,20 +56,39 @@
             color: #333;
             cursor: pointer;
         }
-        .back-btn {
+        .btn {
             display: inline-block;
-            margin-top: 30px;
             padding: 12px 30px;
-            background: #f0f0f0;
-            color: #667eea;
+            background: #667eea;
+            color: white;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
+            border: none;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
-        .back-btn:hover {
-            background: #e0e0e0;
+        .btn:hover {
+            background: #5a6fd1;
             transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
         }
     </style>
 </head>
@@ -81,43 +100,74 @@
         </div>
         
         <div class="topics-container">
-            <ul class="topics-list">
-                <li class="topic-item">
-                    <input type="checkbox" id="topic1">
-                    <label for="topic1">Reliability</label>
-                </li>
-                <li class="topic-item">
-                    <input type="checkbox" id="topic2">
-                    <label for="topic2">Accountability</label>
-                </li>
-                <li class="topic-item">
-                    <input type="checkbox" id="topic3">
-                    <label for="topic3">Honesty</label>
-                </li>
-                <li class="topic-item">
-                    <input type="checkbox" id="topic4">
-                    <label for="topic4">Diligence</label>
-                </li>
-                <li class="topic-item">
-                    <input type="checkbox" id="topic5">
-                    <label for="topic5">Collaboration</label>
-                </li>
-                <li class="topic-item">
-                    <input type="checkbox" id="topic6">
-                    <label for="topic6">Communication</label>
-                </li>
-                <li class="topic-item">
-                    <input type="checkbox" id="topic7">
-                    <label for="topic7">Initiative</label>
-                </li>
-                <li class="topic-item">
-                    <input type="checkbox" id="topic8">
-                    <label for="topic8">Adaptability</label>
-                </li>
-            </ul>
+            <form id="assessmentForm">
+                <ul class="topics-list">
+                    <li class="topic-item">
+                        <input type="checkbox" id="topic1" name="topics" value="reliability">
+                        <label for="topic1">Reliability</label>
+                    </li>
+                    <li class="topic-item">
+                        <input type="checkbox" id="topic2" name="topics" value="accountability">
+                        <label for="topic2">Accountability</label>
+                    </li>
+                    <li class="topic-item">
+                        <input type="checkbox" id="topic3" name="topics" value="honesty">
+                        <label for="topic3">Morals</label>
+                    </li>
+                    <li class="topic-item">
+                        <input type="checkbox" id="topic4" name="topics" value="diligence">
+                        <label for="topic4">Diligence</label>
+                    </li>
+                    <li class="topic-item">
+                        <input type="checkbox" id="topic5" name="topics" value="collaboration">
+                        <label for="topic5">Collaboration</label>
+                    </li>
+                    <li class="topic-item">
+                        <input type="checkbox" id="topic6" name="topics" value="communication">
+                        <label for="topic6">Communication</label>
+                    </li>
+                    <li class="topic-item">
+                        <input type="checkbox" id="topic7" name="topics" value="initiative">
+                        <label for="topic7">Initiative</label>
+                    </li>
+                    <li class="topic-item">
+                        <input type="checkbox" id="topic8" name="topics" value="adaptability">
+                        <label for="topic8">Adaptability</label>
+                    </li>
+                </ul>
+                <div class="error-message" id="topicsError">Please select at least one topic</div>
+                
+                <div class="btn-container">
+                    <a href="/landing.html" class="btn btn-secondary">Back to Dashboard</a>
+                    <button type="submit" class="btn">Create Assessment</button>
+                </div>
+            </form>
         </div>
-        
-        <a href="/landing.html" class="back-btn">Back to Dashboard</a>
     </div>
+
+    <script>
+        document.getElementById('assessmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset error message
+            document.getElementById('topicsError').style.display = 'none';
+            
+            // Get selected topics
+            const selectedTopics = Array.from(document.querySelectorAll('input[name="topics"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            // Validate form
+            if (selectedTopics.length === 0) {
+                document.getElementById('topicsError').style.display = 'block';
+                return;
+            }
+            
+            // Store selected topics in localStorage
+            localStorage.setItem('selectedTopics', JSON.stringify(selectedTopics));
+            
+            // Redirect to role-questions page
+            window.location.href = '/role-questions.html';
+        });
+    </script>
 </body>
 </html> 
