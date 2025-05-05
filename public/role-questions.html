@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Role Questions</title>
+    <title>Role Questions - Midway Ideathon</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
             background: white;
-            margin-top: 200px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 40px;
         }
         .header {
             text-align: center;
             margin-bottom: 40px;
+            margin-top: 180px;
         }
         .header h1 {
             color: #333;
@@ -27,45 +27,32 @@
         .header p {
             color: #666;
         }
-        .role-info {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        .role-info p {
-            margin: 5px 0;
-            color: #333;
-        }
         .questions-container {
             background: #f8f9fa;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .question-group {
-            margin-bottom: 30px;
+        .question-item {
+            margin-bottom: 20px;
             padding: 20px;
             background: white;
-            border-radius: 8px;
+            border-radius: 5px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        .question-group h3 {
-            color: #333;
-            margin-bottom: 15px;
-            padding-right: 30px;
-        }
-        .question-group p {
-            color: #666;
-            margin-bottom: 15px;
         }
         .question-checkbox {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .question-checkbox input[type="checkbox"] {
             width: 20px;
             height: 20px;
+        }
+        .question-checkbox label {
+            font-size: 1.1em;
+            color: #333;
+            cursor: pointer;
         }
         .btn {
             display: inline-block;
@@ -105,196 +92,183 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Role-Specific Questions</h1>
-            <p>Select and customize the questions for your assessment</p>
-        </div>
-
-        <div class="role-info">
-            <p><strong>Company:</strong> <span id="companyName"></span></p>
-            <p><strong>Position:</strong> <span id="position"></span></p>
-            <p><strong>Role Type:</strong> <span id="roleType"></span></p>
+        <div class="header">    
+            <h1>Role Questions</h1>
+            <p>Select the questions you want to include in your assessment</p>
         </div>
         
         <div class="questions-container">
             <form id="questionsForm">
                 <div id="questionsList">
-                    <!-- Questions will be dynamically inserted here -->
+                    <!-- Questions will be dynamically added here -->
                 </div>
                 <div class="error-message" id="questionsError">Please select at least one question</div>
                 
                 <div class="btn-container">
-                    <a href="/assessment-creation.html" class="btn btn-secondary">Back</a>
-                    <button type="submit" class="btn">Send to Interviewers</button>
+                    <a href="assessment-creation.html" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn">Next</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Behavioral questions based on selected values
-        const behavioralQuestions = {
+        // Debug: Log current URL
+        console.log('Current URL:', window.location.href);
+        
+        // Get topics from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const topics = urlParams.getAll('topics');
+        
+        // Debug: Log all URL parameters
+        console.log('All URL Parameters:');
+        for (const [key, value] of urlParams.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        
+        console.log('Topics from URL:', topics); // Debug log
+
+        // Questions for each topic
+        const questionsByTopic = {
             reliability: [
                 {
-                    title: "Reliability in Work",
-                    question: "Describe a situation where you had to meet a tight deadline. How did you ensure you delivered on time?"
+                    id: 'reliability1',
+                    question: 'Describe a time when you had to meet a tight deadline. How did you ensure you delivered on time?',
+                    topic: 'reliability'
                 },
                 {
-                    title: "Consistency",
-                    question: "How do you maintain consistent quality in your work, especially under pressure?"
+                    id: 'reliability2',
+                    question: 'How do you handle situations when you realize you might not be able to meet a commitment?',
+                    topic: 'reliability'
                 }
             ],
             accountability: [
                 {
-                    title: "Taking Responsibility",
-                    question: "Share an example of when you made a mistake at work. How did you handle it?"
+                    id: 'accountability1',
+                    question: 'Tell me about a time when you made a mistake at work. How did you handle it?',
+                    topic: 'accountability'
                 },
                 {
-                    title: "Ownership",
-                    question: "Describe a time when you took ownership of a project or task that wasn't originally assigned to you."
+                    id: 'accountability2',
+                    question: 'How do you ensure you take responsibility for your work and decisions?',
+                    topic: 'accountability'
                 }
             ],
             honesty: [
                 {
-                    title: "Ethical Decision Making",
-                    question: "Describe a situation where you had to make a difficult ethical decision at work."
+                    id: 'honesty1',
+                    question: 'Describe a situation where you had to be honest about a difficult truth. How did you handle it?',
+                    topic: 'honesty'
                 },
                 {
-                    title: "Transparency",
-                    question: "How do you handle situations where you need to deliver difficult news or feedback?"
+                    id: 'honesty2',
+                    question: 'How do you maintain integrity in your work?',
+                    topic: 'honesty'
                 }
             ],
             diligence: [
                 {
-                    title: "Attention to Detail",
-                    question: "How do you ensure accuracy and thoroughness in your work?"
+                    id: 'diligence1',
+                    question: 'How do you ensure quality in your work?',
+                    topic: 'diligence'
                 },
                 {
-                    title: "Work Ethic",
-                    question: "Describe a time when you went above and beyond to complete a task or project."
+                    id: 'diligence2',
+                    question: 'Describe a time when you had to pay attention to detail in your work.',
+                    topic: 'diligence'
                 }
             ],
             collaboration: [
                 {
-                    title: "Teamwork",
-                    question: "Describe a successful team project you were part of. What was your role?"
+                    id: 'collaboration1',
+                    question: 'Tell me about a time when you had to work with a difficult team member.',
+                    topic: 'collaboration'
                 },
                 {
-                    title: "Conflict Resolution",
-                    question: "How do you handle disagreements or conflicts within a team?"
+                    id: 'collaboration2',
+                    question: 'How do you contribute to a positive team environment?',
+                    topic: 'collaboration'
                 }
             ],
             communication: [
                 {
-                    title: "Clear Communication",
-                    question: "Describe a time when you had to explain a complex idea to someone with less technical knowledge."
+                    id: 'communication1',
+                    question: 'Describe a time when you had to explain a complex idea to someone.',
+                    topic: 'communication'
                 },
                 {
-                    title: "Active Listening",
-                    question: "How do you ensure you understand others' perspectives in a discussion?"
+                    id: 'communication2',
+                    question: 'How do you ensure effective communication in your work?',
+                    topic: 'communication'
                 }
             ],
             initiative: [
                 {
-                    title: "Proactive Problem Solving",
-                    question: "Describe a time when you identified a problem before others noticed it and took action."
+                    id: 'initiative1',
+                    question: 'Tell me about a time when you identified a problem and took action to solve it.',
+                    topic: 'initiative'
                 },
                 {
-                    title: "Self-Motivation",
-                    question: "How do you stay motivated when working on long-term projects?"
+                    id: 'initiative2',
+                    question: 'How do you stay proactive in your work?',
+                    topic: 'initiative'
                 }
             ],
             adaptability: [
                 {
-                    title: "Handling Change",
-                    question: "Describe a time when you had to quickly adapt to a significant change at work."
+                    id: 'adaptability1',
+                    question: 'Describe a time when you had to adapt to a significant change at work.',
+                    topic: 'adaptability'
                 },
                 {
-                    title: "Learning Agility",
-                    question: "How do you approach learning new skills or technologies?"
+                    id: 'adaptability2',
+                    question: 'How do you handle unexpected challenges in your work?',
+                    topic: 'adaptability'
                 }
             ]
         };
 
-        // Load form data and display questions
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get data from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const formData = {
-                companyName: urlParams.get('companyName'),
-                position: urlParams.get('position'),
-                roleType: urlParams.get('roleType'),
-                experienceLevel: urlParams.get('experienceLevel'),
-                skills: JSON.parse(urlParams.get('skills') || '[]')
-            };
-            
-            if (!formData.companyName || !formData.position || !formData.roleType) {
-                window.location.href = '/employer-form.html';
+        // Function to display questions
+        function displayQuestions() {
+            const questionsList = document.getElementById('questionsList');
+            questionsList.innerHTML = '';
+
+            if (!topics || topics.length === 0) {
+                console.log('No topics found in URL'); // Debug log
                 return;
             }
 
-            // Display role information
-            document.getElementById('companyName').textContent = formData.companyName;
-            document.getElementById('position').textContent = formData.position;
-            document.getElementById('roleType').textContent = formData.roleType;
+            console.log('Displaying questions for topics:', topics); // Debug log
 
-            // Display behavioral questions based on role type and experience level
-            const questionsList = document.getElementById('questionsList');
-            let allQuestions = [];
-
-            // Get questions based on role type and experience level
-            const topics = getTopicsForRole(formData.roleType, formData.experienceLevel);
             topics.forEach(topic => {
-                if (behavioralQuestions[topic]) {
-                    allQuestions = allQuestions.concat(behavioralQuestions[topic]);
+                const topicQuestions = questionsByTopic[topic];
+                console.log(`Questions for topic ${topic}:`, topicQuestions); // Debug log
+
+                if (topicQuestions) {
+                    topicQuestions.forEach(q => {
+                        const questionDiv = document.createElement('div');
+                        questionDiv.className = 'question-item';
+                        questionDiv.innerHTML = `
+                            <div class="question-checkbox">
+                                <input type="checkbox" id="${q.id}" name="questions" value="${q.id}">
+                                <label for="${q.id}">${q.question}</label>
+                            </div>
+                        `;
+                        questionsList.appendChild(questionDiv);
+                    });
+                } else {
+                    console.log(`No questions found for topic: ${topic}`); // Debug log
                 }
             });
-
-            // Display questions
-            allQuestions.forEach((q, index) => {
-                const questionGroup = document.createElement('div');
-                questionGroup.className = 'question-group';
-                questionGroup.innerHTML = `
-                    <input type="checkbox" class="question-checkbox" id="question${index}" name="selectedQuestions" value="${index}" checked>
-                    <h3>${q.title}</h3>
-                    <p>${q.question}</p>
-                    <textarea 
-                        class="answer-input" 
-                        placeholder="Enter your customized version of this question (optional)"
-                        rows="3"
-                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
-                    ></textarea>
-                `;
-                questionsList.appendChild(questionGroup);
-            });
-        });
-
-        // Helper function to get relevant topics based on role type and experience level
-        function getTopicsForRole(roleType, experienceLevel) {
-            const baseTopics = ['reliability', 'accountability', 'honesty'];
-            
-            switch(roleType) {
-                case 'Software Engineer':
-                case 'Data Scientist':
-                case 'DevOps Engineer':
-                    baseTopics.push('diligence', 'collaboration');
-                    break;
-                case 'Product Manager':
-                    baseTopics.push('communication', 'initiative');
-                    break;
-                case 'UX Designer':
-                    baseTopics.push('communication', 'adaptability');
-                    break;
-            }
-            
-            if (experienceLevel === 'Senior Level') {
-                baseTopics.push('initiative', 'adaptability');
-            }
-            
-            return baseTopics;
         }
 
-        // Save questions
+        // Display questions when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded'); // Debug log
+            displayQuestions();
+        });
+
+        // Handle form submission
         document.getElementById('questionsForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -302,41 +276,27 @@
             document.getElementById('questionsError').style.display = 'none';
             
             // Get selected questions
-            const selectedCheckboxes = document.querySelectorAll('input[name="selectedQuestions"]:checked');
-            if (selectedCheckboxes.length === 0) {
+            const selectedQuestions = Array.from(document.querySelectorAll('input[name="questions"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            console.log('Selected questions:', selectedQuestions); // Debug log
+            
+            // Validate form
+            if (selectedQuestions.length === 0) {
                 document.getElementById('questionsError').style.display = 'block';
                 return;
             }
-
-            // Get form data from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const formData = {
-                companyName: urlParams.get('companyName'),
-                position: urlParams.get('position'),
-                roleType: urlParams.get('roleType'),
-                experienceLevel: urlParams.get('experienceLevel'),
-                skills: JSON.parse(urlParams.get('skills') || '[]')
-            };
-
-            const questions = Array.from(selectedCheckboxes).map(checkbox => {
-                const questionGroup = checkbox.closest('.question-group');
-                return {
-                    title: questionGroup.querySelector('h3').textContent,
-                    originalQuestion: questionGroup.querySelector('p').textContent,
-                    customizedQuestion: questionGroup.querySelector('textarea').value.trim() || questionGroup.querySelector('p').textContent
-                };
-            });
-
-            // Create URL with all data
-            const assessmentData = {
-                ...formData,
-                questions
-            };
             
-            // Redirect to interviewer selection page with data
-            const params = new URLSearchParams();
-            params.append('data', JSON.stringify(assessmentData));
-            window.location.href = `/interviewer-selection.html?${params.toString()}`;
+            // Create URL with selected questions
+            const url = new URL('interviewer-selection.html', window.location.origin);
+            selectedQuestions.forEach(question => {
+                url.searchParams.append('questions', question);
+            });
+            
+            console.log('Redirecting to:', url.toString()); // Debug log
+            
+            // Redirect to interviewer selection page with questions as URL parameters
+            window.location.href = url.toString();
         });
     </script>
 </body>

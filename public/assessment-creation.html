@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assessment Creation</title>
+    <title>Create Assessment - Midway Ideathon</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -138,7 +138,7 @@
                 <div class="error-message" id="topicsError">Please select at least one topic</div>
                 
                 <div class="btn-container">
-                    <a href="/landing.html" class="btn btn-secondary">Back to Dashboard</a>
+                    <a href="landing.html" class="btn btn-secondary">Back to Dashboard</a>
                     <button type="submit" class="btn">Create Assessment</button>
                 </div>
             </form>
@@ -156,17 +156,24 @@
             const selectedTopics = Array.from(document.querySelectorAll('input[name="topics"]:checked'))
                 .map(checkbox => checkbox.value);
             
+            console.log('Selected topics:', selectedTopics); // Debug log
+            
             // Validate form
             if (selectedTopics.length === 0) {
                 document.getElementById('topicsError').style.display = 'block';
                 return;
             }
             
-            // Store selected topics in localStorage
-            localStorage.setItem('selectedTopics', JSON.stringify(selectedTopics));
+            // Create URL with selected topics
+            const url = new URL('role-questions.html', window.location.origin);
+            selectedTopics.forEach(topic => {
+                url.searchParams.append('topics', topic);
+            });
             
-            // Redirect to role-questions page
-            window.location.href = '/role-questions.html';
+            console.log('Redirecting to:', url.toString()); // Debug log
+            
+            // Redirect to role-questions page with topics as URL parameters
+            window.location.href = url.toString();
         });
     </script>
 </body>

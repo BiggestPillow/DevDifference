@@ -9,9 +9,7 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // Serve static files from public directory
-app.use(express.static(path.join(__dirname, 'public'), {
-    index: 'role-selection.html'  // This makes role-selection.html the default file
-}));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.get('/', (req, res) => {
@@ -19,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'employer-login.html'));
 });
 
 app.get('/interviewer-login', (req, res) => {
@@ -36,6 +34,10 @@ app.get('/interviewer-dashboard', (req, res) => {
 
 app.get('/assessment-creation', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'assessment-creation.html'));
+});
+
+app.get('/role-questions.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'role-questions.html'));
 });
 
 // Login endpoints

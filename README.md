@@ -1,58 +1,67 @@
-# Login Page
+# Midway Ideathon
 
-A modern, responsive login page built with Node.js and Express.
-
-## Features
-
-- Clean, modern UI with gradient background
-- Responsive design
-- Form validation
-- API endpoint for login
-- Remember me functionality
-- Forgot password link
-- Sign up option
+A web application for conducting technical interviews and assessments.
 
 ## Project Structure
 
 ```
-login-page/
+DevDifference/
 ├── public/
-│   ├── index.html
+│   ├── employer-login.html
+│   ├── interviewer-login.html
+│   ├── role-selection.html
+│   ├── landing.html
+│   ├── interviewer-dashboard.html
+│   ├── assessment-creation.html
+│   ├── role-questions.html
 │   ├── styles.css
 │   └── script.js
 ├── server.js
-├── package.json
 └── README.md
 ```
 
-## Setup
+## Features
+
+- Role-based access (Employer/Interviewer)
+- Assessment creation and management
+- Interview scheduling
+- Question bank management
+- Real-time feedback system
+
+## Getting Started
 
 1. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Start the development server:
+2. Start the server:
 ```bash
-npm run dev
+node server.js
 ```
 
-3. Start the production server:
-```bash
-npm start
+3. Open your browser and navigate to:
+```
+http://localhost:3000
 ```
 
-The application will be available at `http://localhost:3000`
+## Routes
 
-## Development
-
-- The development server uses nodemon for automatic reloading
-- Static files are served from the `public` directory
-- API endpoints are defined in `server.js`
-- Frontend code is in the `public` directory
+- `/` - Role selection page
+- `/login` - Employer login page
+- `/interviewer-login` - Interviewer login page
+- `/landing` - Employer dashboard
+- `/interviewer-dashboard` - Interviewer dashboard
+- `/assessment-creation` - Assessment creation page
+- `/role-questions` - Role-specific questions page
 
 ## API Endpoints
 
-- `POST /api/login` - Handles login requests
-  - Request body: `{ email: string, password: string }`
-  - Response: `{ success: boolean, message: string }` 
+- `POST /api/login` - Employer login
+- `POST /api/interviewer/login` - Interviewer login
+
+## Technologies Used
+
+- Node.js
+- Express.js
+- HTML/CSS/JavaScript 
