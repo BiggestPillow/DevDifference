@@ -121,8 +121,10 @@
             timerDisplay.textContent = 'Time Remaining: 60s';
             
             console.log('Recorded chunks:', recordedChunks);
-            // Redirect to feedback page with the transcribed text
-            window.location.href = 'feedback.html?data=' + encodeURIComponent(transcription);
+            // Add 2 second delay before redirecting
+            setTimeout(() => {
+                window.location.href = 'feedback.html?data=' + encodeURIComponent(transcription);
+            }, 2000);
         }
 
         function startTimer() {
