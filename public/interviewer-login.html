@@ -174,7 +174,8 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    window.location.href = data.redirect;
+                    // window.location.href = data.redirect;
+                    window.location.href = '/interviewer-landing.html';
                 } else {
                     alert(data.message || 'Login failed');
                 }

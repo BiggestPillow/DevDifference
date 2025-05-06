@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { 
+            background: white;
+            font-family: Arial, sans-serif;
+        }
+        .container { 
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .feedback-container {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        .notes-section {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .script-section {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .notes-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .notes-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .notes-list li:before {
+            content: "•";
+            color: #667eea;
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        .notes-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .script-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #333;
+        }
+        .section-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .back-btn {
+            background: #f0f0f0;
+            color: #667eea;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: block;
+            width: fit-content;
+            margin: 20px auto 0;
+        }
+        .back-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        .add-note-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        .add-note-btn:hover {
+            background: #5a6fd1;
+            transform: translateY(-2px);
+        }
+        .notes-list li.feedback-item {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .notes-list li.feedback-item:before {
+            color: #dc3545;
+        }
+        .notes-input, .add-note-btn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interview Feedback</h1>
+        <div class="feedback-container">
+            <div class="notes-section">
+                <div class="section-title">Comments</div>
+                <ul class="notes-list" id="notesList">
+                    <li class="feedback-item">Too many filler words</li>
+                    <li class="feedback-item">Did not answer question</li>
+                    <li class="feedback-item">Poor eye contact</li>
+                </ul>
+            </div>
+            <div class="script-section">
+                <div class="section-title">Interview Script</div>
+                <div class="script-content" id="scriptContent"></div>
+            </div>
+        </div>
+        <a href="interviewer-landing.html" class="back-btn">Back to Landing</a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const data = urlParams.get('data');
+            if (data) {
+                const scriptContent = document.getElementById('scriptContent');
+                scriptContent.textContent = data;
+                console.log('Recorded script:', data);
+            } else {
+                document.getElementById('scriptContent').textContent = 'No script recorded.';
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Interview</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background: white; }
+        .container { text-align: center; padding: 40px; max-width: 800px; margin: 0 auto; }
+        .question { font-size: 1.5em; color: #333; margin-bottom: 20px; }
+        .camera-container { margin: 20px 0; }
+        video { width: 100%; max-width: 480px; border: 1px solid #ddd; border-radius: 10px; }
+        .timer { font-size: 1.2em; color: #666; margin: 10px 0; }
+        .controls { margin-top: 20px; }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="question">What is your greatest strength?</h1>
+        <div class="camera-container">
+            <video id="camera" autoplay muted></video>
+        </div>
+        <div class="timer" id="timer">Time Remaining: 60s</div>
+        <div class="controls">
+            <button id="startBtn" class="btn">Start Recording</button>
+            <button id="stopBtn" class="btn" disabled>Stop Recording</button>
+        </div>
+    </div>
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+        let timerInterval;
+        let timeLeft = 60;
+        let transcription = '';
+
+        const video = document.getElementById('camera');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const timerDisplay = document.getElementById('timer');
+
+        startBtn.addEventListener('click', startRecording);
+        stopBtn.addEventListener('click', stopRecording);
+
+        async function startRecording() {
+            try {
+                // Get video stream
+                const videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 480, height: 360 },
+                    audio: false 
+                });
+                video.srcObject = videoStream;
+
+                // Get audio stream separately
+                const audioStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: true,
+                    video: false 
+                });
+
+                // Combine the streams
+                const combinedStream = new MediaStream([
+                    ...videoStream.getVideoTracks(),
+                    ...audioStream.getAudioTracks()
+                ]);
+
+                // Create MediaRecorder with default options
+                mediaRecorder = new MediaRecorder(combinedStream);
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                        console.log('Data available:', event.data);
+                    }
+                };
+
+                // Request data every second
+                mediaRecorder.start(1000);
+                console.log('MediaRecorder started');
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                startTimer();
+                startTranscription(audioStream);
+            } catch (err) {
+                console.error('Error accessing camera or microphone:', err);
+                alert('Error starting recording. Please check your camera and microphone permissions.');
+            }
+        }
+
+        function startTranscription(stream) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.onresult = (event) => {
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        transcription += event.results[i][0].transcript + ' ';
+                    }
+                }
+            };
+            recognition.start();
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            video.srcObject.getTracks().forEach(track => track.stop());
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            timerDisplay.textContent = 'Time Remaining: 60s';
+            
+            console.log('Recorded chunks:', recordedChunks);
+            // Redirect to feedback page with the transcribed text
+            window.location.href = 'feedback.html?data=' + encodeURIComponent(transcription);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Time Remaining: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    stopRecording();
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html> 
